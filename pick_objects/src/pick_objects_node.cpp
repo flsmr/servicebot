@@ -1,23 +1,22 @@
 #include <ros/ros.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
+#include "pick_objects/GoToPosition.h"
 
 // Define a client for to send goal requests to the move_base server through a SimpleActionClient
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
-int main(int argc, char** argv){
-  // Initialize the simple_navigation_goals node
-  ros::init(argc, argv, "pick_objects");
 
+bool moveToPosition(pick_objects::GoToPosition::Request& targetPose, pick_objects::GoToPosition::Response& responseMsg) {
   //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("move_base", true);
 
-  // Wait 5 sec for move_base action server to come up
-  while(!ac.waitForServer(ros::Duration(5.0))){
+  // Wait 1 sec for move_base action server to come up
+  while(!ac.waitForServer(ros::Duration(1.0))){
     ROS_INFO("Waiting for the move_base action server to come up");
   }
 
-  // SEND FIRST GOAL
+  // SEND GOAL
   // ^^^^^^^^^^^^^^^
   move_base_msgs::MoveBaseGoal goal;
 
@@ -26,49 +25,36 @@ int main(int argc, char** argv){
   goal.target_pose.header.stamp = ros::Time::now();
 
   // Define a position and orientation for the robot to reach
-  goal.target_pose.pose.position.x = 1.0;
-  goal.target_pose.pose.orientation.w = 1.0;
+  goal.target_pose.pose.position.x = targetPose.xpos;
+  goal.target_pose.pose.position.y = targetPose.ypos;
+  goal.target_pose.pose.orientation.w = targetPose.zrot;
 
    // Send the goal position and orientation for the robot to reach
-  ROS_INFO("Sending fist goal");
+  ROS_INFO("Sending robot to location");
   ac.sendGoal(goal);
 
   // Wait an infinite time for the results
   ac.waitForResult();
 
   // Check if the robot reached its goal
-  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-    ROS_INFO("Hooray, first goal reached");
-  else
-    ROS_INFO("The base failed to move to first goal");
-
-  // Wait 5 sec before sending next goal
-  while(!ac.waitForServer(ros::Duration(5.0))){
-    ROS_INFO("Waiting for before sending second goal");
+  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+    //responseMsg = "Robot reached location";
+    return true;
   }
+  else {
+    //responseMsg = "Robot could not reach location!";
+    return false;
+  }
+}
 
-  // SEND SECOND GOAL
-  // ^^^^^^^^^^^^^^^^
-  // set up the frame parameters
-  goal.target_pose.header.frame_id = "map";
-  goal.target_pose.header.stamp = ros::Time::now();
+int main(int argc, char** argv){
+  // Initialize the simple_navigation_goals node
+  ros::init(argc, argv, "pick_objects");
 
-  // Define a position and orientation for the robot to reach
-  goal.target_pose.pose.position.x = 2.0;
-  goal.target_pose.pose.orientation.w = 2.0;
+  ros::NodeHandle n;
 
-   // Send the goal position and orientation for the robot to reach
-  ROS_INFO("Sending second goal");
-  ac.sendGoal(goal);
-
-  // Wait an infinite time for the results
-  ac.waitForResult();
-
-  // Check if the robot reached its goal
-  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-    ROS_INFO("Hooray, second goal reached");
-  else
-    ROS_INFO("The base failed to move to second goal");
+  // register service go_to_position
+  ros::ServiceServer goToPositionService = n.advertiseService("/pick_objects/go_to_position",moveToPosition);
 
   return 0;
 }
