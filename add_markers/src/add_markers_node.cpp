@@ -67,12 +67,12 @@ void showMarker(float xpos, float ypos) {
 int main( int argc, char** argv )
 {
   // set pick up and drop off locations
-  float pickupXpos = 1.0;
-  float pickupYpos = 1.0;
+  float pickupXpos = -1.0;
+  float pickupYpos = -1.0;
   float pickupZrot = 1.0;
 
-  float dropoffXpos = 2.0;
-  float dropoffYpos = 2.0;
+  float dropoffXpos = -2.0;
+  float dropoffYpos = -2.0;
   float dropoffZrot = 2.0;
 
   ros::init(argc, argv, "add_markers_node");
@@ -92,6 +92,15 @@ int main( int argc, char** argv )
   goToPositionService.request.zrot = pickupZrot;
   if (! goToPositionClient.call(goToPositionService))
     ROS_ERROR("Failed to call service go_to_location");
+
+  // send robot to second location
+  showMarker(pickupXpos,pickupYpos);
+  goToPositionService.request.xpos = dropoffXpos;
+  goToPositionService.request.ypos = dropoffYpos;
+  goToPositionService.request.zrot = dropoffZrot;
+  if (! goToPositionClient.call(goToPositionService))
+    ROS_ERROR("Failed to call service go_to_location");
+
 
 /*
     // sleep for 5 seconds
