@@ -38,13 +38,13 @@ bool moveToPosition(pick_objects::GoToPosition::Request& targetPose, pick_object
 
   // Check if the robot reached its goal
   if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-    ROS_INFO("Robot reached location");
-    //responseMsg = "Robot reached location";
+    responseMsg.msg_feedback = "Robot reached location";
+    ROS_INFO_STREAM(responseMsg.msg_feedback);
     return true;
   }
   else {
-    ROS_INFO("Robot could not reach location!");
-    //responseMsg = "Robot could not reach location!";
+    responseMsg.msg_feedback = "Robot could not reach location!";
+    ROS_INFO_STREAM(responseMsg.msg_feedback);
     return false;
   }
 }
