@@ -20,10 +20,12 @@ int main(int argc, char** argv){
   move_base_msgs::MoveBaseGoal goal;
 
   double goal1_x, goal1_y, goal1_a, goal2_x, goal2_y, goal2_a;
-  ros::param::param<double>("goal1_x", goal1_x, 1.0);
-  ros::param::param<double>("goal1_y", goal1_y, 1.0);
-  ros::param::param<double>("goal2_x", goal2_x, 2.0);
-  ros::param::param<double>("goal2_y", goal2_y, 2.0);
+  ros::param::param<double>("goal1_x", goal1_x, 0.4);
+  ros::param::param<double>("goal1_y", goal1_y, -6.25);
+  ros::param::param<double>("goal1_a", goal1_a, 0.0);
+  ros::param::param<double>("goal2_x", goal2_x, -2.85);
+  ros::param::param<double>("goal2_y", goal2_y, -0.3);
+  ros::param::param<double>("goal2_a", goal2_a, 1.57);
 
   // FIRST GOAL
   // set up the frame parameters
@@ -33,6 +35,7 @@ int main(int argc, char** argv){
   // Define a position and orientation for the robot to reach
   goal.target_pose.pose.position.x = goal1_x;
   goal.target_pose.pose.position.y = goal1_y;
+  goal.target_pose.pose.orientation.z = goal1_a;
   goal.target_pose.pose.orientation.w = 1.0;
 
    // Send the goal position and orientation for the robot to reach
@@ -43,20 +46,23 @@ int main(int argc, char** argv){
   ac.waitForResult();
 
   // Check if the robot reached its goal
-  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-    ROS_INFO("The robot reached the first goal");
+  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+    ROS_INFO("The robot reached the first goal and needs to catch breath for 5 seconds");
+    ros::Duration(5.0).sleep();
+  }
   else
     ROS_INFO("The robot failed to move to first goal");
 
   // SECOND GOAL
   // set up the frame parameters
-  goal.target_pose.header.frame_id = "base_link";
+  goal.target_pose.header.frame_id = "map";
   goal.target_pose.header.stamp = ros::Time::now();
 
   // Define a position and orientation for the robot to reach
   goal.target_pose.pose.position.x = goal2_x;
   goal.target_pose.pose.position.y = goal2_y;
-  goal.target_pose.pose.orientation.w = 0.0;
+  goal.target_pose.pose.orientation.z = goal2_a;
+  goal.target_pose.pose.orientation.w = 1.0;
 
    // Send the goal position and orientation for the robot to reach
   ROS_INFO_STREAM("Sending robot to x: " << goal2_x << " y: " << goal2_y << " phi: " << goal2_a);
@@ -66,8 +72,10 @@ int main(int argc, char** argv){
   ac.waitForResult();
 
   // Check if the robot reached its goal
-  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
     ROS_INFO("The robot reached the second goal");
+    ros::Duration(5.0).sleep();
+  }
   else
     ROS_INFO("The robot failed to move to second goal");
 
