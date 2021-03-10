@@ -22,7 +22,7 @@
 	<param name="selective_resampling" value="true"/>
 	<param name="initial_cov_xx" value="10"/>
 	<param name="initial_cov_yy" value="10"/>
-	<param name="initial_cov_aa" value="5"/>
+	<param name="initial_cov_aa" value="4"/>
 	<param name="laser_z_hit" value="0.95"/>
 	<param name="laser_z_rand" value="0.05"/>
   </node>
