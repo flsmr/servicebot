@@ -1,10 +1,16 @@
 #!/bin/sh
-export TURTLEBOT_GAZEBO_WORLD_FILE=/home/workspace/catkin_ws/src/turtlebot_simulator/turtlebot_gazebo/worlds/corridor.world
-xterm -e " roslaunch turtlebot_gazebo turtlebot_world.launch" &
+# launch robot, gazebo world and start rviz for visualization
+xterm -e " roslaunch my_robot world.launch" &
 sleep 5
-xterm -e " roslaunch turtlebot_gazebo amcl_demo.launch" &
+# launch localization and navigation
+xterm -e " roslaunch my_robot amcl.launch" &
 sleep 5
-xterm -e " roslaunch turtlebot_rviz_launchers view_navigation.launch" &
-sleep 5
-xterm -e " rosrun add_markers add_markers_node" &
-
+# enter individual goals if desired (angle in rad)
+#xterm -e " rosparam set goal1_x 0.4" 
+#xterm -e " rosparam set goal1_y -6.25" 
+#xterm -e " rosparam set goal1_a 0.0" 
+#xterm -e " rosparam set goal2_x -2.85" 
+#xterm -e " rosparam set goal2_y -0.3" 
+#xterm -e " rosparam set goal2_a 1.57" 
+# show markers at two subsequent goals
+xterm -e " rosrun add_markers add_markers_test_node" 

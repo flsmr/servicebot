@@ -5,16 +5,8 @@
 
 // Define a client for to send goal requests to the move_base server through a SimpleActionClient
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
-
-
 bool moveToPosition(pick_objects::GoToPosition::Request& targetPose, pick_objects::GoToPosition::Response& responseMsg) {
-  //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("move_base", true);
-
-  // Wait 1 sec for move_base action server to come up
-  while(!ac.waitForServer(ros::Duration(1.0))){
-    ROS_INFO("Waiting for the move_base action server to come up");
-  }
 
   // SEND GOAL
   // ^^^^^^^^^^^^^^^
@@ -27,7 +19,8 @@ bool moveToPosition(pick_objects::GoToPosition::Request& targetPose, pick_object
   // Define a position and orientation for the robot to reach
   goal.target_pose.pose.position.x = targetPose.xpos;
   goal.target_pose.pose.position.y = targetPose.ypos;
-  goal.target_pose.pose.orientation.w = targetPose.zrot;
+  goal.target_pose.pose.orientation.z = targetPose.zrot;
+  goal.target_pose.pose.orientation.w = 1.0;
 
    // Send the goal position and orientation for the robot to reach
   ROS_INFO("Sending robot to location");
@@ -54,6 +47,13 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "pick_objects");
 
   ros::NodeHandle n;
+
+  MoveBaseClient ac("move_base", true);
+  // Wait 1 sec for move_base action server to come up
+  while(!ac.waitForServer(ros::Duration(1.0))){
+    if (!ros::ok()) return 0;
+    ROS_INFO("Waiting for the move_base action server to come up");
+  }
 
   // register service go_to_position
   ros::ServiceServer goToPositionService = n.advertiseService("/pick_objects/go_to_position",moveToPosition);
