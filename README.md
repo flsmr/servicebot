@@ -1,6 +1,6 @@
 # ROS Home Service Bot
 Simulation of a robot within a Gazebo world which performs path finding in between two user-selected targets. This project is the final submission for the Udacity Robot Software Engineer Nanodegree. In a nutshell, this project joins some important building blocks within the world of robotics: Mapping of an unknown environment, Localization, as well as path planning within the ROS framework. Download this project to gain insights on how all these blocks interact and let the robot move around between user defined locations.
-<img src="./img/rviz_gazebo_overview.gif" alt="Service robot finding target (Rviz and Gazebo)" width="800"/>
+<img src="./img/home_service_bot_demo.gif" alt="Service robot finding target (Rviz and Gazebo)" width="800"/>
 
 ## Key Features
 As a part of this project, a simple robot and a virtual environment of an apartment were designed within the standard physics simulation environment Gazebo. Within Gazebo, the robot moves around obeying the basic laws of physics and at the same time, corresponding sensor readings are simulated and reported to the ROS environment. Using the provided ROS packages, the following tasks can be accomplished:
